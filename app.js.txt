@@ -1,0 +1,89 @@
+// src/App.js
+import { useEffect, useState } from "react"
+import { supabase } from "./supabaseClient"
+
+export default function App() {
+  const [staff, setStaff] = useState([])
+  const [equipment, setEquipment] = useState([])
+  const [workOrders, setWorkOrders] = useState([])
+  const [parts, setParts] = useState([])
+
+  useEffect(() => {
+    fetchStaff()
+    fetchEquipment()
+    fetchWorkOrders()
+    fetchParts()
+  }, [])
+
+  async function fetchStaff() {
+    let { data, error } = await supabase.from("staff").select("*")
+    if (!error) setStaff(data)
+    else console.error(error)
+  }
+
+  async function fetchEquipment() {
+    let { data, error } = await supabase.from("equipment").select("*")
+    if (!error) setEquipment(data)
+    else console.error(error)
+  }
+
+  async function fetchWorkOrders() {
+    let { data, error } = await supabase.from("work_orders").select("*")
+    if (!error) setWorkOrders(data)
+    else console.error(error)
+  }
+
+  async function fetchParts() {
+    let { data, error } = await supabase.from("parts").select("*")
+    if (!error) setParts(data)
+    else console.error(error)
+  }
+
+  return (
+    <div className="p-6 space-y-8">
+      <h1 className="text-3xl font-bold text-blue-700">Tegeta Gas Plant Maintenance</h1>
+
+      {/* Staff */}
+      <section>
+        <h2 className="text-xl font-semibold">Staff</h2>
+        <ul className="list-disc ml-6">
+          {staff.map((s) => (
+            <li key={s.id}>{s.name} – {s.role} ({s.status})</li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Equipment */}
+      <section>
+        <h2 className="text-xl font-semibold">Equipment</h2>
+        <ul className="list-disc ml-6">
+          {equipment.map((e) => (
+            <li key={e.id}>{e.name} – {e.type} at {e.location} ({e.status})</li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Parts */}
+      <section>
+        <h2 className="text-xl font-semibold">Parts Inventory</h2>
+        <ul className="list-disc ml-6">
+          {parts.map((p) => (
+            <li key={p.id}>{p.name} – Stock: {p.stock} {p.unit} ({p.location})</li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Work Orders */}
+      <section>
+        <h2 className="text-xl font-semibold">Work Orders</h2>
+        <ul className="list-disc ml-6">
+          {workOrders.map((w) => (
+            <li key={w.id}>
+              {w.title} – {w.status} (Progress: {w.percent_complete}%)
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+  )
+}
